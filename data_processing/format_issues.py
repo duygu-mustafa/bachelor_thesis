@@ -1,7 +1,7 @@
 import pandas as pd
 
 
-with open('../resources/issues.csv', 'r', encoding='utf-8') as file:
+with open('../resources/main_issues.csv', 'r', encoding='utf-8') as file:
     lines = file.readlines()
 
 

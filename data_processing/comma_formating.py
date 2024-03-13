@@ -14,5 +14,5 @@ def read_csv(path):
 
 df = read_csv("../resources/global_commit_history_with_issue_id.csv")
 df["commit_message"] = df["commit_message"].apply(lambda x: f'"{x}"')
-df.to_csv("global_commit_history_normalized.csv", index=False)
+df.to_csv("main_commit_history_with_issue_ids.csv", index=False)
 a=6
