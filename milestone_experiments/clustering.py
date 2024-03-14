@@ -10,8 +10,6 @@ from gensim.models import KeyedVectors
 from openai import OpenAI
 
 
-api_key = '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'
-
 client = OpenAI(
   api_key=api_key,  # this is also the default, it can be omitted
 )
