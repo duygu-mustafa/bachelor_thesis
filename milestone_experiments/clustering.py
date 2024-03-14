@@ -68,9 +68,10 @@ df = data.rename(columns={'Title': 'issue_title', 'Created At (UTC)': 'timestamp
 
 # Apply preprocessing
 df['processed_title'] = df['issue_title'].apply(preprocess_text)
+df.to_csv("../resources/processed_issue_titles.csv", index=False)
 
 # Generate embeddings
-df['ada_embedding'] = df["processed_title"].apply(lambda x: get_embedding(x, model='text-embedding-3-small'))
+# df['ada_embedding'] = df["processed_title"].apply(lambda x: get_embedding(x, model='text-embedding-3-small'))
 
 
 bp = 5
