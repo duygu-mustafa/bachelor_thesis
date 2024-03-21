@@ -15,7 +15,7 @@ class Commit:
                 self.category = category
                 break
         else:
-            self.category = 'Uncategorized'
+            self.category = 'Undefined'
 
     def __repr__(self):
         return f"Commit({self.message}, Issue ID: {self.issue_id}, Timestamp: {self.timestamp})"
