@@ -4,6 +4,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.cluster import KMeans
 from scipy.sparse import csr_matrix, hstack
 
+from commit_activity.plot_clusters import visualize_clusters
 from commit_activity.utils import read_rules, process_commits, define_numerical_context_with_type
 
 
@@ -42,6 +43,9 @@ def abstract_commits():
     for commit, label in zip(filtered_commits, cluster_labels):
         commit.cluster = label
 
+    # visualize the clusters
+    visualize_clusters(combined_features, cluster_labels)
+
     # save the results
     commit_clusters = pd.DataFrame({
         'issue_id': [commit.issue_id for commit in filtered_commits],
@@ -52,6 +56,7 @@ def abstract_commits():
     })
 
     a = 5
+
 
 if __name__ == '__main__':
     abstract_commits()
