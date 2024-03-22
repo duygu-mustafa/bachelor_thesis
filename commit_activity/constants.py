@@ -1,0 +1,5 @@
+MAIN_DATASET_COMMITS = '../resources/main_dataset/main_commit_history_with_issue_ids.csv'
+MAIN_DATASET_ISSUES = '../resources/main_dataset/main_issue_history.csv'
+ACTIVITY_RULES = '../resources/activity_rules.csv'
+BACKUP_DATASET_COMMITS = '../resources/backup_dataset/backup_commit_history_with_issue_ids.csv'
+BACKUP_DATASET_ISSUES = '../resources/backup_dataset/backup_issue_history.csv'
