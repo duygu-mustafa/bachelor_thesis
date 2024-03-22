@@ -1,9 +1,11 @@
+from scipy.sparse import csr_matrix, issparse
+from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
 import numpy as np
 
 
-def visualize_clusters(combined_features, cluster_labels):
+def visualize_clusters_with_tsne(combined_features, cluster_labels):
     """
     Visualizes clusters of combined commit features using t-SNE.
 
@@ -37,3 +39,31 @@ def visualize_clusters(combined_features, cluster_labels):
     plt.ylabel('t-SNE feature 2')
     plt.legend()
     plt.show()
+
+
+def visualize_clusters_with_pca(features, cluster_labels):
+    """
+    Visualizes clusters using PCA to reduce to 2 dimensions.
+
+    Parameters:
+    - features: The original high-dimensional feature set.
+    - cluster_labels: Cluster labels for each data point.
+    """
+    pca = PCA(n_components=2)
+    reduced_features = pca.fit_transform(features.toarray() if issparse(features) else features)
+
+    plt.figure(figsize=(10, 8))
+    unique_labels = set(cluster_labels)
+    colors = plt.cm.rainbow(np.linspace(0, 1, len(unique_labels)))
+
+    for k, col in zip(unique_labels, colors):
+        class_member_mask = (cluster_labels == k)
+        xy = reduced_features[class_member_mask]
+        plt.plot(xy[:, 0], xy[:, 1], 'o', markerfacecolor=col, markeredgecolor='k', markersize=8, label=f"Cluster {k}")
+
+    plt.title('Cluster visualization with PCA')
+    plt.legend()
+    plt.xlabel('PCA Feature 1')
+    plt.ylabel('PCA Feature 2')
+    plt.show()
+

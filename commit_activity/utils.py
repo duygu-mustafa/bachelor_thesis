@@ -1,4 +1,7 @@
+import numpy as np
 import pandas as pd
+from scipy.sparse import csr_matrix
+from sklearn.preprocessing import MinMaxScaler
 
 from commit_activity.commit import Commit
 from commit_activity.issue import Issue
@@ -62,3 +65,14 @@ def define_numerical_context_with_type(issue, category_ids):
                 break
 
         commit.set_context(preceding_distance, following_distance, preceding_category_id, following_category_id)
+
+
+def normalize_context_vectors(commits):
+    context_features = np.array([commit.context_vector for commit in commits])
+    # Initialize the MinMaxScaler
+    scaler = MinMaxScaler()
+    # Fit the scaler to the context features and transform them
+    normalized_context_features = scaler.fit_transform(context_features)
+    # Convert the normalized context features back to a sparse matrix, if needed
+    normalized_context_sparse = csr_matrix(normalized_context_features)
+    return normalized_context_sparse
