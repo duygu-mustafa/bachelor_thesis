@@ -11,8 +11,8 @@ def mine_frequent_patterns(issues):
 
     # Find frequent patterns with a minimum support threshold
     # Adjust the minsup parameter based on your dataset size and desired specificity
-    frequent_patterns = ps.frequent(minsup=2, closed=True)
-    frequent_patterns_max_len3 = [pattern for sup, pattern in frequent_patterns if len(pattern) > 1 and len(pattern) <= 3 and pattern.count('uncategorized') <= 1]
+    frequent_patterns = ps.frequent(minsup=3, closed=False)
+    frequent_patterns_max_len3 = [pattern for sup, pattern in frequent_patterns if 3 < len(pattern) <= 5 and pattern.count('uncategorized') <= 1]
     frequent_patterns_uncat = [pattern for pattern in frequent_patterns_max_len3 if 'uncategorized' in pattern]
     frequent_patterns_categorized = [pattern for pattern in frequent_patterns_max_len3 if 'uncategorized' not in pattern]
 

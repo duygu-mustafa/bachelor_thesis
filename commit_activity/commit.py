@@ -2,20 +2,22 @@ from commit_activity.processing import preprocess_text
 
 
 class Commit:
-    def __init__(self, commit_hash, issue_id, timestamp, message):
+    def __init__(self, commit_hash, issue_id, message="", timestamp=None):
         self.commit_hash = commit_hash
         self.issue_id = issue_id
         self.timestamp = timestamp
         self.message = message
         self.normalized_message = preprocess_text(message)
-        self.category = None
-        self.category_id = -1
-        self.context = {
-            'preceding_distance': -1,
-            'following_distance': -1,
-            'preceding_category_id': None,
-            'following_category_id': None
-        }
+        if commit_hash == 'start':
+            self.category = 'start'
+            self.category_id = -2
+        elif commit_hash == 'end':
+            self.category = 'end'
+            self.category_id = -3
+        else:
+            self.category = None
+            self.category_id = -1
+        self.context = None
         self.context_vector = None
         self.cluster = None
 

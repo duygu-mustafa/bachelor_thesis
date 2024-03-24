@@ -3,7 +3,7 @@ from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
 
-def preprocess_text(text):
+def preprocess_text(text: ""):
     # Lowercasing
     text = text.lower()
     text = text.replace('merge branch', '')  # Removing common commit message prefix

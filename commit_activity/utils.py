@@ -30,7 +30,7 @@ def process_commits(rules, category_ids):
 
     # Iterate over each row in the DataFrame to create and add Commit instances to their respective Issue
     for index, row in commits_df.iterrows():
-        commit = Commit(row['commit_hash'], row['issue_id'], row['timestamp'], row['commit_message'])
+        commit = Commit(row['commit_hash'], row['issue_id'], row['commit_message'], row['timestamp'])
         commit.categorize(rules, category_ids)
         all_commits.append(commit)
 

@@ -42,7 +42,7 @@ def abstract_commits():
     issues, all_commits = process_commits(rules, category_ids)
 
     # remove one commit issues
-    filtered_issues = {issue_id: issue for issue_id, issue in issues.items() if len(issue.commits) > 1}
+    filtered_issues = {issue_id: issue for issue_id, issue in issues.items() if len(issue) > 3}
     filtered_commits = [commit for commit in all_commits if commit.issue_id in filtered_issues]
 
     # mine frequent patterns and apply to commits
@@ -68,7 +68,7 @@ def abstract_commits():
     # combined_features = hstack([tfidf_matrix, context_matrix])
     combined_features = tfidf_matrix # Use this line if you only want to use TF-IDF features
     # perform clustering
-    n_clusters = 6  # Adjust based on your analysis
+    n_clusters = 10  # Adjust based on your analysis
 
     cluster_labels = apply_clustering(
         features=combined_features,
