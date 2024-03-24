@@ -19,10 +19,6 @@ class Issue:
         """Return the issue ID"""
         return self.issue_id
 
-    def get_issue_length(self):
-        """Return the number of commits in the issue"""
-        return len(self.commits)
-
     def start_time(self):
         """Return the timestamp of the first commit"""
         if self.commits:
@@ -40,6 +36,15 @@ class Issue:
         if self.commits:
             return self.end_time() - self.start_time()
         return None
+
+    def __iter__(self):
+        return iter(self.commits)
+
+    def __len__(self):
+        return len(self.commits)
+
+    def __getitem__(self, item):
+        return self.commits[item]
 
     def __repr__(self):
         return f"Issue({self.issue_id}, Commits: {len(self.commits)})"

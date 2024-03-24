@@ -44,5 +44,5 @@ class Commit:
         ]
 
     def __repr__(self):
-        return f"Commit({self.message}, Issue ID: {self.issue_id}, Timestamp: {self.timestamp})"
+        return f"{self.category} Commit({self.message}, Issue ID: {self.issue_id}, Timestamp: {self.timestamp})"
 

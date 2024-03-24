@@ -6,6 +6,7 @@ from nltk.stem import PorterStemmer
 def preprocess_text(text):
     # Lowercasing
     text = text.lower()
+    text = text.replace('merge branch', '')  # Removing common commit message prefix
 
     # Tokenization
     tokens = word_tokenize(text)

@@ -1,9 +1,10 @@
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.cluster import KMeans, AgglomerativeClustering, DBSCAN
-from scipy.sparse import hstack, issparse
+from scipy.sparse import issparse
 
 from commit_activity.plot_clusters import visualize_clusters_with_tsne
+from commit_activity.sequence_mining import mine_frequent_patterns, apply_freq_pattern_mapping
 from commit_activity.utils import (
     read_rules,
     process_commits,
@@ -32,6 +33,7 @@ def apply_clustering(features, algorithm='kmeans', n_clusters=5, **kwargs):
 
     return cluster_labels
 
+
 def abstract_commits():
     # read pre-defined rules
     rules, category_ids = read_rules()
@@ -42,6 +44,10 @@ def abstract_commits():
     # remove one commit issues
     filtered_issues = {issue_id: issue for issue_id, issue in issues.items() if len(issue.commits) > 1}
     filtered_commits = [commit for commit in all_commits if commit.issue_id in filtered_issues]
+
+    # mine frequent patterns and apply to commits
+    mapping = mine_frequent_patterns(filtered_issues)
+    apply_freq_pattern_mapping(filtered_issues, mapping, category_ids)
 
     # define context for each commit in issues
     for issue in filtered_issues.values():
@@ -59,8 +65,8 @@ def abstract_commits():
 
     context_matrix = normalize_context_vectors(filtered_commits)
 
-    combined_features = hstack([tfidf_matrix, context_matrix])
-    # combined_features = tfidf_matrix # Use this line if you only want to use TF-IDF features
+    # combined_features = hstack([tfidf_matrix, context_matrix])
+    combined_features = tfidf_matrix # Use this line if you only want to use TF-IDF features
     # perform clustering
     n_clusters = 6  # Adjust based on your analysis
 

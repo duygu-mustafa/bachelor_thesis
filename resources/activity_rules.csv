@@ -1,7 +1,7 @@
 category,keywords
-feature,"add,implement,introduce,create,develop,new"
-bugfix,"fix,resolve,correct,address,repair,bug"
-refactoring,"refactor,restructure,clean up,clean,optimize,improve, lint, linting"
-documentation,"doc,documentation,readme,comment,wiki"
+feature,"add,implement,introduce,create,develop,new,improve"
+bugfix,"fix,resolve,correct,address,repair,bug,bugfix,fixes,solve,patch,resolve,close,fixing"
+refactoring,"refactor,restructure,clean up,clean,optimize,improve,lint,linting"
+documentation,"doc,documentation,readme,comment,wiki,docs"
 test,"test,unittest,testing,TDD,assert,testcase"
 configuration,"config,setup,configure,initial setup,settings,set up,initial,init"
