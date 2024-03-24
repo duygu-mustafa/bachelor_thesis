@@ -1,4 +1,7 @@
+import numpy as np
+
 from commit_activity.processing import preprocess_text
+from commit_activity.utils import one_hot_encode
 
 
 class Commit:
@@ -10,18 +13,17 @@ class Commit:
         self.normalized_message = preprocess_text(message)
         if commit_hash == 'start':
             self.category = 'start'
-            self.category_id = -2
+            self.category_id = -10
         elif commit_hash == 'end':
             self.category = 'end'
-            self.category_id = -3
+            self.category_id = 10
         else:
             self.category = None
             self.category_id = -1
-        self.context = None
         self.context_vector = None
         self.cluster = None
 
-    def categorize(self, rules, category_ids):
+    def categorize(self, rules, category_to_index):
         """Categorize the commit based on provided rules"""
         for category, keywords in rules.items():
             if any(keyword in self.message.lower() for keyword in keywords):
@@ -29,21 +31,27 @@ class Commit:
                 break
         else:
             self.category = 'uncategorized'
-        self.category_id = category_ids.get(self.category, -1)
+        self.category_id = one_hot_encode(self.category, category_to_index)
 
-    def set_context(self, preceding_distance, following_distance, preceding_category_id, following_category_id):
+    def set_context(self, preceding_category_id, following_category_id):
         """Set context information for the commit"""
-        self.context['preceding_distance'] = preceding_distance
-        self.context['following_distance'] = following_distance
-        self.context['preceding_category_id'] = preceding_category_id
-        self.context['following_category_id'] = following_category_id
         self.context_vector = [
             self.category_id,
-            preceding_distance,
-            following_distance,
             preceding_category_id,
             following_category_id
         ]
+
+    def set_context(self, vector):
+        """Set context information for the commit"""
+        self.context_vector = vector
+
+    def determine_context(self, preceding_category, following_category, category_to_index):
+        current_vector = one_hot_encode(self.category, category_to_index)
+        preceding_vector = one_hot_encode(preceding_category, category_to_index)
+        following_vector = one_hot_encode(following_category, category_to_index)
+
+        # Concatenate the one-hot vectors to form the context vector
+        self.context_vector = np.concatenate([preceding_vector, current_vector, following_vector])
 
     def __repr__(self):
         return f"{self.category} Commit({self.message}, Issue ID: {self.issue_id}, Timestamp: {self.timestamp})"

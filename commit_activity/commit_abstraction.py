@@ -1,16 +1,15 @@
+import numpy as np
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.cluster import KMeans, AgglomerativeClustering, DBSCAN
-from scipy.sparse import issparse
+from scipy.sparse import issparse, csr_matrix, hstack
 
 from commit_activity.plot_clusters import visualize_clusters_with_tsne
 from commit_activity.sequence_mining import mine_frequent_patterns, apply_freq_pattern_mapping
 from commit_activity.utils import (
     read_rules,
-    process_commits,
-    define_numerical_context_with_type,
-    normalize_context_vectors,
 )
+from commit_activity.commit_processing import process_commits, define_context
 
 
 def apply_clustering(features, algorithm='kmeans', n_clusters=5, **kwargs):
@@ -36,10 +35,10 @@ def apply_clustering(features, algorithm='kmeans', n_clusters=5, **kwargs):
 
 def abstract_commits():
     # read pre-defined rules
-    rules, category_ids = read_rules()
+    rules, category_to_index = read_rules()
 
     # group commits in sequences by issue_id and initial categories
-    issues, all_commits = process_commits(rules, category_ids)
+    issues, all_commits = process_commits(rules, category_to_index)
 
     # remove one commit issues
     filtered_issues = {issue_id: issue for issue_id, issue in issues.items() if len(issue) > 3}
@@ -47,11 +46,11 @@ def abstract_commits():
 
     # mine frequent patterns and apply to commits
     mapping = mine_frequent_patterns(filtered_issues)
-    apply_freq_pattern_mapping(filtered_issues, mapping, category_ids)
+    apply_freq_pattern_mapping(filtered_issues, mapping, category_to_index)
 
     # define context for each commit in issues
     for issue in filtered_issues.values():
-        define_numerical_context_with_type(issue, category_ids)
+        define_context(issue, category_to_index)
 
     # vectorize commits
     tfidf_vectorizer = TfidfVectorizer()
@@ -59,24 +58,22 @@ def abstract_commits():
     commit_messages = [commit.normalized_message for commit in filtered_commits]
     tfidf_matrix = tfidf_vectorizer.fit_transform(commit_messages)
 
-    # case1: context not minmax scaled
-    # context_vectors = [commit.context_vector for commit in filtered_commits]
-    # context_matrix = csr_matrix(np.array(context_vectors))
+    context_vectors = [commit.context_vector for commit in filtered_commits]
 
-    context_matrix = normalize_context_vectors(filtered_commits)
+    for vector in context_vectors:
+        assert len(vector) == 24, "Found a vector with incorrect length."
+        assert isinstance(vector, np.ndarray), "Found a non-numpy array object."
+        assert vector.dtype in [np.float64, np.int32, np.float32], "Found a vector with incorrect data type."
+    context_array = np.array(context_vectors)
+    context_matrix = csr_matrix(context_array)
 
-    # combined_features = hstack([tfidf_matrix, context_matrix])
-    combined_features = tfidf_matrix # Use this line if you only want to use TF-IDF features
+    combined_features = hstack([tfidf_matrix, context_matrix])
+
     # perform clustering
-    n_clusters = 10  # Adjust based on your analysis
+    n_clusters = 7  # Adjust based on your analysis
 
-    cluster_labels = apply_clustering(
-        features=combined_features,
-        n_clusters=n_clusters,
-        algorithm='kmeans',
-        # eps=0.5,  # Example parameter for DBSCAN
-        # min_samples=5
-    )
+    model = KMeans(n_clusters=n_clusters,)
+    cluster_labels = model.fit_predict(combined_features)
 
     for commit, label in zip(filtered_commits, cluster_labels):
         commit.cluster = label
