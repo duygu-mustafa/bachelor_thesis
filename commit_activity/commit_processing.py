@@ -7,7 +7,7 @@ from commit_activity.issue import Issue
 from commit_activity.utils import one_hot_encode
 
 
-def process_commits(rules, category_to_index):
+def process_commits(rules, category_to_index, categorize=True):
     commits_df = pd.read_csv(MAIN_DATASET_COMMITS)
     # Initialize a dictionary to hold Issue objects, keyed by issue_id
     issues = {}
@@ -16,7 +16,8 @@ def process_commits(rules, category_to_index):
     # Iterate over each row in the DataFrame to create and add Commit instances to their respective Issue
     for index, row in commits_df.iterrows():
         commit = Commit(row['commit_hash'], row['issue_id'], row['commit_message'], row['timestamp'])
-        commit.categorize(rules, category_to_index)
+        if categorize:
+            commit.categorize(rules, category_to_index)
         all_commits.append(commit)
 
         # If the issue already exists, add the commit to it; otherwise, create a new Issue
