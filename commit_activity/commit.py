@@ -13,15 +13,13 @@ class Commit:
         self.normalized_message = preprocess_text(message)
         if commit_hash == 'start':
             self.category = 'start'
-            self.category_id = -10
         elif commit_hash == 'end':
             self.category = 'end'
-            self.category_id = 10
         else:
             self.category = None
-            self.category_id = -1
         self.context_vector = None
         self.cluster = None
+        self.activity = None
 
     def categorize(self, rules, category_to_index):
         """Categorize the commit based on provided rules"""

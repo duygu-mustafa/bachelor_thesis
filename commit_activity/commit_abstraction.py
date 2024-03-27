@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 import numpy as np
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -72,11 +74,36 @@ def abstract_commits():
     # perform clustering
     n_clusters = 7  # Adjust based on your analysis
 
-    model = KMeans(n_clusters=n_clusters,)
+    model = KMeans(n_clusters=n_clusters, random_state=42)
     cluster_labels = model.fit_predict(combined_features)
 
-    for commit, label in zip(filtered_commits, cluster_labels):
-        commit.cluster = label
+    for commit, cluster_id in zip(filtered_commits, cluster_labels):
+        commit.cluster = cluster_id
+
+
+    # label commits
+    cluster_categories = defaultdict(list)
+
+    # Populate the dictionary with categories for each commit in each cluster
+    for commit, cluster_id in zip(filtered_commits, cluster_labels):
+        cluster_categories[cluster_id].append(commit.category)
+
+    # Find the most common category in each cluster that is not uncategorized
+    most_common_categories = {}
+    for cluster_id, categories in cluster_categories.items():
+        # Create a filtered list of categories that excludes "uncategorized"
+        filtered_categories = [cat for cat in categories if cat.lower() != "uncategorized"]
+        if filtered_categories:
+            # Find the most common category within the filtered list
+            most_common_category = max(set(filtered_categories), key=filtered_categories.count)
+            most_common_categories[cluster_id] = most_common_category
+        else:
+            # Handle the case where all categories are "uncategorized" or the list is empty
+            most_common_categories[cluster_id] = "All Uncategorized"  # or any placeholder you prefer
+
+    for commit in filtered_commits:
+        commit.activity = most_common_categories[commit.cluster]
+
 
     # visualize the clusters
     visualize_clusters_with_tsne(combined_features, cluster_labels)
@@ -87,7 +114,8 @@ def abstract_commits():
         'commit_hash': [commit.commit_hash for commit in filtered_commits],
         'timestamp': [commit.timestamp for commit in filtered_commits],
         'commit_message': [commit.message for commit in filtered_commits],
-        'cluster': [commit.cluster for commit in filtered_commits]
+        'cluster': [commit.cluster for commit in filtered_commits],
+        'activity': [commit.activity for commit in filtered_commits],
     })
 
     a = 5
